@@ -1,3 +1,5 @@
+# Based on sample code from https://www.edureka.co/blog/snake-game-with-pygame/
+
 import pygame
 import random
 import json
@@ -5,9 +7,10 @@ from datetime import date
 from operator import itemgetter
 
 pygame.init()
+pygame.display.set_caption("Python the Game")
 
 white = (255, 255, 255)
-grey = (128, 128, 128)
+grey = (150, 150, 150)
 black = (0, 0, 0)
 red = (213, 50, 80)
 orange = (255, 215, 0)
@@ -98,7 +101,7 @@ def print_highscore():
         scores = json.load(score_file)
     for j, c in enumerate(scores):
         # l_color = red if i == j else black
-        item = game_msg_font.render(str(j + 1) + ".    " + str(scores[j][0]) + " - " + scores[j][1], True, black)
+        item = game_msg_font.render(str(j + 1) + "." + " " * (6 -len(str(j + 1))) + str(scores[j][0]) + " - " + scores[j][1], True, black)
         dis.blit(item, [dis_height / 10, (j + 4) * 30])
     pygame.display.update()
 
