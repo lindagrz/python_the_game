@@ -6,3 +6,5 @@ Features:
 * incremental speed game mode with additional features, 
 * high score saves, 
 * adjustable resulution through settings file.
+
+Based on some code from: https://www.edureka.co/blog/snake-game-with-pygame/
