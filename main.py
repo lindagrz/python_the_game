@@ -20,8 +20,8 @@ class LoadConfig:
     white = (255, 255, 255)
     grey = (150, 150, 150)
     black = (0, 0, 0)
-    red = (213, 50, 80)
-    orange = (255, 215, 0)
+    red = (170, 0, 0)
+    orange = (208, 91, 3)
     blue = (0, 0, 255)
     dark_green = (0, 100, 0)
 
@@ -59,12 +59,13 @@ class Snake:
         """
         calculates score based on the movement speed and calculated modifier
         """
-        self.score += self.speed * self.score_modifier
+        self.score += self.score_modifier
         if self.incremental_game:
             self.last_increase += 1
             if self.last_increase >= 5:
                 self.last_increase = 0
                 self.set_speed()
+                self.score_modifier += 1
 
     def draw_snake(self, d=None, block_size=10):
         """
@@ -75,23 +76,22 @@ class Snake:
         for x in self.snake_list:
             pygame.draw.rect(d, self.snake_color, [x[0], x[1], block_size, block_size])
 
-    def random_food(self):
+    def random_food(self, config):
         """
         :return: choice of food for the incremental game, with some limitations based on snake status
         """
-        if self.score == 500:
-            options = [LoadConfig.orange, LoadConfig.blue]
-            r = random.randrange(1, 20)
-            print(r)
-            r = 1
-            if r == 1 or r == 20:
-                if self.length <= 5:
-                    options.remove(LoadConfig.blue)
-                if self.speed <= 5:
-                    options.remove(LoadConfig.orange)
-                if not options == []:
-                    return random.choice(options)
-            return None
+        foodx_inc = round(random.randrange(0, config.dis_width - config.snake_block) / 10.0) * 10.0
+        foody_inc = round(random.randrange(0, config.dis_height - config.snake_block) / 10.0) * 10.0
+        options = [LoadConfig.orange, LoadConfig.blue]
+        r = random.randrange(1, 5)
+        if r == 1:
+            if self.length <= 5:
+                options.remove(LoadConfig.blue)
+            if self.speed <= 5:
+                options.remove(LoadConfig.orange)
+            if not options == []:
+                return foodx_inc, foody_inc, random.choice(options)
+        return 0, 0, None
 
     def print_scoreboard(self, d=None, c=None):
         """
@@ -100,7 +100,7 @@ class Snake:
         :return: draws score panel on the bottom of the screen
         """
         pygame.draw.rect(d, LoadConfig.grey, (0, c.dis_height, c.dis_width, c.score_row_height))
-        value = pygame.font.SysFont("bahnschrift", 25).render("Score: " + str(self.score), True, LoadConfig.blue)
+        value = pygame.font.SysFont("bahnschrift", 25).render("Score: " + str(self.score), True, LoadConfig.dark_green)
         return d.blit(value, [10, c.dis_height + c.score_row_height / 4])
 
 
@@ -187,7 +187,7 @@ def game_loop(disp, config=None, incremental=False):
         x1 += x1_change
         y1 += y1_change
         disp.fill(config.white)
-        pygame.draw.rect(disp, config.red, [foodx, foody, config.snake_block, config.snake_block])
+        pygame.draw.rect(disp, config.black, [foodx, foody, config.snake_block, config.snake_block])
         snake_head = [x1, y1]
         player1.snake_list.append(snake_head)
         if len(player1.snake_list) > player1.length:
@@ -209,24 +209,21 @@ def game_loop(disp, config=None, incremental=False):
             player1.set_length()
             player1.add_score()
 
-        if incremental and player1.score == 500 and food_type is None:
-            foodx_inc = round(random.randrange(0, config.dis_width - config.snake_block) / 10.0) * 10.0
-            foody_inc = round(random.randrange(0, config.dis_height - config.snake_block) / 10.0) * 10.0
-            food_type = player1.random_food()
+        if incremental and player1.score == config.speed * 5 and food_type is None:
+            foodx_inc, foody_inc, food_type = player1.random_food(config)
 
         if incremental and x1 == foodx_inc and y1 == foody_inc and food_type is not None:
             if food_type == config.orange:
                 player1.set_speed(diff=-2)
                 player1.add_score()
             if food_type == config.blue:
-                player1.set_length(diff=-2)
+                player1.set_length(diff=-4)
+                player1.add_score()
 
             while True:
-                foodx_inc = round(random.randrange(0, config.dis_width - config.snake_block) / 10.0) * 10.0
-                foody_inc = round(random.randrange(0, config.dis_height - config.snake_block) / 10.0) * 10.0
                 if not (foodx_inc == foodx and foody_inc == foody):
                     break
-            food_type = player1.random_food()
+            foodx_inc, foody_inc, food_type = player1.random_food(config)
 
         clock.tick(player1.speed)
     new_hs = save_score(player1.score, str(date.today()))
