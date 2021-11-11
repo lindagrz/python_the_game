@@ -1,5 +1,3 @@
-# Based on sample code from https://www.edureka.co/blog/snake-game-with-pygame/
-
 import pygame
 import random
 import json
@@ -242,7 +240,7 @@ def print_menu(config=None, disp=None, text_lines=None, s=0, i=1, new_highscore=
     i - active menu selection; set to 1 by default
     s - score to display as message
     """
-    # pygame.draw.rect(dis, gray, (dis_width/10, dis_height/10, dis_width*0.8, score_row_height*0.8))
+
     disp.fill(config.grey)
     if text_lines is None:
         text_lines = []
