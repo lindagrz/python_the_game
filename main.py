@@ -4,8 +4,6 @@ import json
 from datetime import date
 from operator import itemgetter
 
-display = None
-
 
 class LoadConfig:
     def __init__(self):
@@ -110,7 +108,7 @@ def print_high_scores(config=None, d=None):
     :param d: what display to execute om
     :return: high scores read and diaplayed on screen
     """
-    d.fill(config.grey)
+    d.fill(config.white)
     with open('cfg/scores.json') as score_file:
         scores = json.load(score_file)
     for j, c in enumerate(scores):
@@ -238,7 +236,7 @@ def print_menu(config=None, disp=None, text_lines=None, s=0, i=1, new_highscore=
     s - score to display as message
     """
 
-    disp.fill(config.grey)
+    disp.fill(config.white)
     if text_lines is None:
         text_lines = []
 
@@ -270,7 +268,7 @@ def navigate_menu(config=None, disp=None, last_score=0, new_highscore=False):
     menu_opt_count = len(menu_text) - 1
     i = 0
 
-    disp.fill(config.grey)
+    disp.fill(config.white)
     print_menu(config=config, disp=disp, text_lines=menu_text, i=i, s=last_score, new_highscore=new_highscore)
     pygame.display.update()
 
@@ -305,7 +303,6 @@ def navigate_menu(config=None, disp=None, last_score=0, new_highscore=False):
 
 
 def main():
-    global display
     pygame.init()
     pygame.display.set_caption("Python the Game")
     config = LoadConfig()
